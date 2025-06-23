@@ -15,3 +15,9 @@ export type HeapSortSwapStep = {
     index2: number,
     inputArr: number[],
 }
+
+export type CodeLine = {
+    stepNum: number,
+    indents: number, // how many tabs
+    codeStr: string
+}
