@@ -273,12 +273,19 @@ export default function HeapSortPage() {
             <div className="flex gap-2 justify-center text-left">
                 <div>
                     <ul>
+                        <h3>Standard in-place implementation</h3>
                         {heapsortCode.map((line, idx) => (
                             <li key={idx} style={{ paddingLeft: `${line.indents * 20}px` }}>
                                 {line.stepNum}{line.codeStr}
                                 {/* {steps.find((i) => i.line === 1)?.assignedValue} */}
                             </li>
                         ))}
+                        <p>notation:</p>
+                        <ul>
+                            <li>start: start index of heap</li>
+                            <li>end: end index of heap (non-inclusive)</li>
+                            <li>node indices: iLeftChild(i) = 2 * i + 1, iRightChild(i) = 2 * i + 2, iParent(i) = floor((i−1) / 2)</li>
+                        </ul>
                         <p className="mt-2 text-sm">(pseudocode from https://en.wikipedia.org/wiki/Heapsort#Standard_implementation)</p>
                     </ul>
                     <svg width={treeWidth} height={levelHeight * 5} className="border p-5 mt-4">
