@@ -104,133 +104,100 @@ export default function HeapSortPage() {
     // Tree rendering
     const treeWidth = 600
     const levelHeight = 100
+
     useEffect(() => {
-        const nodes = []
-        const branches = []
-        const calculatePosition = (index: number, level: number) => {
-            const x = (treeWidth / (2 ** level)) * (index + 0.5);
-            const y = levelHeight * level;
-            return { x, y };
-        }
-        console.log("allFrames", allFrames)
-        if (selectedFrameIdx && steps[selectedFrameIdx]) {
-            console.log("selectedFrameIdx", selectedFrameIdx)
-            const { transformedValue } = steps[selectedFrameIdx]
-            // swap
-            // const currArr = [...inputArr]
-            // const temp = currArr[index1]
-            // currArr[index1] = currArr[index2]
-            // currArr[index2] = temp
-            // setCurrArray(currArr)
-            if (transformedValue) {
-                setCurrArray(transformedValue)
-                // tree nodes and branches
-                let i = 0
-                console.log("transformedValue", transformedValue)
-                for (const num of transformedValue) {
-                    const level = Math.floor(Math.log2(i + 1))
-                    const index = i - Math.pow(2, level) + 1
-                    // console.log(`i:${i} level:${level} index:${index}}`)
-                    const { x, y } = calculatePosition(index, level);
-                    nodes.push(
-                        <circle key={`${level}-${index}`} cx={x} cy={y} r={20} fill="blue" />
-                    )
-                    nodes.push(
-                        <text
-                            key={`text-${level}-${index}`}
-                            x={x}
-                            y={y + 5}
-                            textAnchor="middle"
-                            fill="white"
-                            fontSize="12"
-                        >
-                            {num}
-                        </text>
-                    )
 
-                    // add branch from child to parent
-                    const parentIdx = Math.floor((i - 1) / 2)
-                    if (parentIdx >= 0) {
-                        const parentLevel = Math.floor(Math.log2(parentIdx + 1));
-                        const parentIndex = parentIdx - Math.pow(2, parentLevel) + 1;
-                        const { x: parentX, y: parentY } = calculatePosition(parentIndex, parentLevel);
+        const makeTree = (currArr: number[]) => {
 
-                        branches.push(
-                            <line
-                                key={`branch-${level}-${index}`}
-                                x1={x}
-                                y1={y}
-                                x2={parentX}
-                                y2={parentY}
-                                stroke="blue"
-                            />
-                        )
-                    }
-                    i = i + 1
+            const calculatePosition = (index: number, level: number) => {
+                const x = (treeWidth / (2 ** level)) * (index + 0.5);
+                const y = levelHeight * level + 30; // add top margin to prevent cutoff
+                return { x, y };
+            }
+
+            // tree nodes and branches
+            const nodes: JSX.Element[] = []
+            const branches: JSX.Element[] = []
+
+            let i = 0
+            console.log("currArr", currArr)
+            for (const num of currArr) {
+                const level = Math.floor(Math.log2(i + 1))
+                const index = i - Math.pow(2, level) + 1
+                // console.log(`i:${i} level:${level} index:${index}}`)
+                const { x, y } = calculatePosition(index, level);
+                nodes.push(
+                    <circle key={`${level}-${index}`} cx={x} cy={y} r={20} fill="blue" />
+                )
+                nodes.push(
+                    <text
+                        key={`text-${level}-${index}`}
+                        x={x}
+                        y={y + 5}
+                        textAnchor="middle"
+                        fill="white"
+                        fontSize="12"
+                    >
+                        {num}
+                    </text>
+                )
+
+                // add branch from child to parent
+                const parentIdx = Math.floor((i - 1) / 2)
+                if (parentIdx >= 0) {
+                    const parentLevel = Math.floor(Math.log2(parentIdx + 1));
+                    const parentIndex = parentIdx - Math.pow(2, parentLevel) + 1;
+                    const { x: parentX, y: parentY } = calculatePosition(parentIndex, parentLevel);
+
+                    branches.push(
+                        <line
+                            key={`branch-${level}-${index}`}
+                            x1={x}
+                            y1={y}
+                            x2={parentX}
+                            y2={parentY}
+                            stroke="blue"
+                        />
+                    )
                 }
+                i = i + 1
             }
             setNodes(nodes)
             setBranches(branches)
         }
-    }, [selectedFrame])
+
+        console.log("allFrames", allFrames)
+        console.log("swapSteps", swapSteps)
+
+        if (selectedFrameIdx === 0) {
+            makeTree(inputArray)
+        }
+
+        else if (swapSteps.length > 0 && selectedFrameIdx && swapSteps[selectedFrameIdx - 1]) {
+            const swapStep = swapSteps[selectedFrameIdx - 1]
+            // console.log("selectedFrameIdx", selectedFrameIdx)
+            // console.log("selectedFrame", selectedFrame)
+            // console.log("swapStep", swapStep)
+
+            if (swapStep) {
+                // swap
+                const { inputArr, index1, index2 } = swapStep
+                const currArr = [...inputArr]
+                const temp = currArr[index1]
+                currArr[index1] = currArr[index2]
+                currArr[index2] = temp
+                setCurrArray(currArr)
+
+                makeTree(currArr)
+            }
+        }
+    }, [swapSteps, selectedFrame])
 
     useEffect(() => {
         console.log("nodes", nodes)
     }, [nodes])
-    // // Tree rendering
 
-    // // const nodes = []
-    // // const branches = []
-    // const calculatePosition = (index: number, level: number) => {
-    //     const x = (treeWidth / (2 ** level)) * (index + 0.5);
-    //     const y = levelHeight * level;
-    //     return { x, y };
-    // }
 
-    // let i = 0
-    // for (const num of inputArray) {
-    //     const level = Math.floor(Math.log2(i + 1))
-    //     const index = i - Math.pow(2, level) + 1
-    //     // console.log(`i:${i} level:${level} index:${index}}`)
-    //     const { x, y } = calculatePosition(index, level);
-    //     nodes.push(
-    //         <circle key={`${level}-${index}`} cx={x} cy={y} r={20} fill="blue" />
-    //     )
-    //     nodes.push(
-    //         <text
-    //             key={`text-${level}-${index}`}
-    //             x={x}
-    //             y={y + 5}
-    //             textAnchor="middle"
-    //             fill="white"
-    //             fontSize="12"
-    //         >
-    //             {num}
-    //         </text>
-    //     )
-
-    //     // add branch from child to parent
-    //     const parentIdx = Math.floor((i - 1) / 2)
-    //     if (parentIdx >= 0) {
-    //         const parentLevel = Math.floor(Math.log2(parentIdx + 1));
-    //         const parentIndex = parentIdx - Math.pow(2, parentLevel) + 1;
-    //         const { x: parentX, y: parentY } = calculatePosition(parentIndex, parentLevel);
-
-    //         branches.push(
-    //             <line
-    //                 key={`branch-${level}-${index}`}
-    //                 x1={x}
-    //                 y1={y}
-    //                 x2={parentX}
-    //                 y2={parentY}
-    //                 stroke="blue"
-    //             />
-    //         )
-    //     }
-    //     i = i + 1
-    // }
-
-    // console.log("nodes", nodes)
     return (
         <div>
             Heap sort page
