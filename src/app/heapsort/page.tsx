@@ -11,7 +11,9 @@ export default function HeapSortPage() {
     const [swapSteps, setSwapSteps] = useState<HeapSortSwapStep[]>([])
     const [steps, setSteps] = useState<AlgoStep[]>([])
     const [allFrames, setAllFrames] = useState<JSX.Element[]>([])
+    // 15 elements max would fit in svg frame
     const inputArray = [7, 4, 3, 9, 1, 2]
+    // const inputArray = [7, 4, 3, 9, 1, 2, 7, 4, 3, 9, 1, 2, 7, 4, 3]
     const [selectedFrame, setSelectedFrame] = useState<JSX.Element>()
     const [selectedFrameIdx, setSelectedFrameIdx] = useState<number>()
     const [currArray, setCurrArray] = useState<number[]>(inputArray)
@@ -102,15 +104,15 @@ export default function HeapSortPage() {
     }, [steps])
 
     // Tree rendering
-    const treeWidth = 600
+    const treeWidth = 700
     const levelHeight = 100
 
     useEffect(() => {
 
-        const makeTree = (currArr: number[]) => {
+        const makeTree = (currArr: number[], swappedIdx1?: number, swappedIdx2?: number) => {
 
             const calculatePosition = (index: number, level: number) => {
-                const x = (treeWidth / (2 ** level)) * (index + 0.5);
+                const x = (treeWidth / (2 ** level)) * (index + 0.5) - 23;
                 const y = levelHeight * level + 30; // add top margin to prevent cutoff
                 return { x, y };
             }
@@ -127,19 +129,40 @@ export default function HeapSortPage() {
                 // console.log(`i:${i} level:${level} index:${index}}`)
                 const { x, y } = calculatePosition(index, level);
                 nodes.push(
-                    <circle key={`${level}-${index}`} cx={x} cy={y} r={20} fill="blue" />
+                    // <circle key={`${level}-${index}`} cx={x} cy={y} r={20} fill="blue" />
+                    // TODO: get motion animation to work
+                    <motion.circle
+                        key={`${level}-${index}`}
+                        cx={x}
+                        cy={y}
+                        r={20}
+                        fill={i === swappedIdx1 || i === swappedIdx2 ? "red" : "blue"}
+                        layout // Enable layout animations
+                        transition={{ duration: 0.5, ease: "easeInOut" }}
+                    />
                 )
                 nodes.push(
-                    <text
+                    // <text
+                    //     key={`text-${level}-${index}`}
+                    //     x={x}
+                    //     y={y + 5}
+                    //     textAnchor="middle"
+                    //     fill="white"
+                    //     fontSize="12"
+                    // >
+                    //     {num}
+                    // </text>
+                    <motion.text
                         key={`text-${level}-${index}`}
                         x={x}
                         y={y + 5}
                         textAnchor="middle"
                         fill="white"
                         fontSize="12"
+                        layout // Enable layout animations
                     >
                         {num}
-                    </text>
+                    </motion.text>
                 )
 
                 // add branch from child to parent
@@ -150,13 +173,22 @@ export default function HeapSortPage() {
                     const { x: parentX, y: parentY } = calculatePosition(parentIndex, parentLevel);
 
                     branches.push(
-                        <line
+                        // <line
+                        //     key={`branch-${level}-${index}`}
+                        //     x1={x}
+                        //     y1={y}
+                        //     x2={parentX}
+                        //     y2={parentY}
+                        //     stroke="blue"
+                        // />
+                        <motion.line
                             key={`branch-${level}-${index}`}
                             x1={x}
                             y1={y}
                             x2={parentX}
                             y2={parentY}
                             stroke="blue"
+                            layout // Enable layout animations
                         />
                     )
                 }
@@ -188,7 +220,7 @@ export default function HeapSortPage() {
                 currArr[index2] = temp
                 setCurrArray(currArr)
 
-                makeTree(currArr)
+                makeTree(currArr, index1, index2)
             }
         }
     }, [swapSteps, selectedFrame])
@@ -202,6 +234,8 @@ export default function HeapSortPage() {
         <div>
             Heap sort page
 
+            {/* array input, limit to 15 elements max, preformat for user so only numbers need to be entered */}
+
             <div className="flex gap-2 justify-center text-left">
                 <div>
                     <ul>
@@ -213,7 +247,7 @@ export default function HeapSortPage() {
                         ))}
                         <p className="mt-2 text-sm">(pseudocode from https://en.wikipedia.org/wiki/Heapsort#Standard_implementation)</p>
                     </ul>
-                    <svg width={treeWidth} height={levelHeight * 5} className="border p-8 mt-4">
+                    <svg width={treeWidth} height={levelHeight * 5} className="border p-5 mt-4">
                         {branches}
                         {nodes}
                     </svg>
