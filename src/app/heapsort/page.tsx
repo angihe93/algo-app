@@ -12,13 +12,15 @@ export default function HeapSortPage() {
     const [steps, setSteps] = useState<AlgoStep[]>([])
     const [allFrames, setAllFrames] = useState<JSX.Element[]>([])
     // 15 elements max would fit in svg frame
-    const inputArray = [7, 4, 3, 9, 1, 2]
+    const [inputArray, setInputArray] = useState<number[]>([7, 4, 3, 9, 1, 2])
     // const inputArray = [7, 4, 3, 9, 1, 2, 7, 4, 3, 9, 1, 2, 7, 4, 3]
     const [selectedFrame, setSelectedFrame] = useState<JSX.Element>()
     const [selectedFrameIdx, setSelectedFrameIdx] = useState<number>()
     const [currArray, setCurrArray] = useState<number[]>(inputArray)
     const [nodes, setNodes] = useState<JSX.Element[]>([])
     const [branches, setBranches] = useState<JSX.Element[]>([])
+    const [userInput, setUserInput] = useState("")
+    const [error, setError] = useState("")
 
     const fetchHeapSort = async (input: number[]) => {
         const response = await fetch('/api/heapsort', {
@@ -95,7 +97,7 @@ export default function HeapSortPage() {
 
     useEffect(() => {
         fetchHeapSort(inputArray)
-    }, [])
+    }, [inputArray])
 
     useEffect(() => {
         if (steps.length > 0) {
@@ -229,22 +231,61 @@ export default function HeapSortPage() {
         console.log("nodes", nodes)
     }, [nodes])
 
+    useEffect(() => {
+        setCurrArray(userInput.trim().split(/\s+/).map(Number))
+    }, [userInput])
+
 
     return (
-        <div>
+        <div className="m-5">
             Heap sort page
 
             {/* array input, limit to 15 elements max, preformat for user so only numbers need to be entered */}
+            <div>
+                <label htmlFor="arrayInput" className="block text-sm font-medium text-gray-700">
+                    Enter up to 15 numbers separated by spaces:
+                </label>
+                <input
+                    id="arrayInput"
+                    type="text"
+                    value={userInput}
+                    onChange={(e) => {
+                        const value = e.target.value;
+                        setUserInput(value);
+
+                        // Validate input
+                        const numbers = value.trim().split(/\s+/).map(Number);
+                        if (numbers.some(isNaN)) {
+                            setError("Input must contain only numbers separated by spaces.");
+                        } else if (numbers.length > 15) {
+                            setError("You can only enter up to 15 numbers.");
+                        } else {
+                            setError("");
+                            setInputArray(numbers); // Update inputArray state
+                        }
+                    }}
+                    placeholder="e.g., 7 4 3 9 1 2"
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+                {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+            </div>
 
             <div className="flex gap-2 justify-center text-left">
                 <div>
                     <ul>
+                        <h3>Standard in-place implementation</h3>
                         {heapsortCode.map((line, idx) => (
                             <li key={idx} style={{ paddingLeft: `${line.indents * 20}px` }}>
                                 {line.stepNum}{line.codeStr}
                                 {/* {steps.find((i) => i.line === 1)?.assignedValue} */}
                             </li>
                         ))}
+                        <p>notation:</p>
+                        <ul>
+                            <li>start: start index of heap</li>
+                            <li>end: end index of heap (non-inclusive)</li>
+                            <li>node indices: iLeftChild(i) = 2 * i + 1, iRightChild(i) = 2 * i + 2, iParent(i) = floor((i−1) / 2)</li>
+                        </ul>
                         <p className="mt-2 text-sm">(pseudocode from https://en.wikipedia.org/wiki/Heapsort#Standard_implementation)</p>
                     </ul>
                     <svg width={treeWidth} height={levelHeight * 5} className="border p-5 mt-4">

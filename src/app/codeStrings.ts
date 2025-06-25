@@ -13,7 +13,7 @@ export const heapsortCode: CodeLine[] = [
     { stepNum: 8, indents: 3, codeStr: "swap(a[end], a[0])" },
     //   { codeStr: "        (The following is siftDown(a, start, end))" },
     { stepNum: 9, indents: 2, codeStr: "root ← start" },
-    { stepNum: 10, indents: 2, codeStr: "while iLeftChild(root) < end do" },
+    { stepNum: 10, indents: 2, codeStr: "while iLeftChild(root) < end do    (sift down operation to maintain heap)" },
     { stepNum: 11, indents: 3, codeStr: "child ← iLeftChild(root)" },
     //   { codeStr: "            (If there is a right child and that child is greater)" },
     { stepNum: 12, indents: 3, codeStr: "if child+1 < end and a[child] < a[child+1] then" },
