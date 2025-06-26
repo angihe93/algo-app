@@ -24,3 +24,28 @@ export const heapsortCode: CodeLine[] = [
     { stepNum: 17, indents: 3, codeStr: "else" },
     { stepNum: 18, indents: 4, codeStr: " break    (return to outer loop)" }
 ]
+
+
+export const AStarCode: CodeLine[] = [
+    { stepNum: 0, indents: 0, codeStr: "function A_Star(start, goal, h)" },
+    { stepNum: 1, indents: 1, codeStr: "openSet := {start}" },
+    { stepNum: 2, indents: 1, codeStr: "cameFrom := an empty map" },
+    { stepNum: 3, indents: 1, codeStr: "gScore := map with default value of Infinity" },
+    { stepNum: 4, indents: 1, codeStr: "gScore[start] := 0" },
+    { stepNum: 5, indents: 1, codeStr: "fScore := map with default value of Infinity" },
+    { stepNum: 6, indents: 1, codeStr: "fScore[start] := h(start)" },
+    { stepNum: 7, indents: 1, codeStr: "while openSet is not empty" },
+    { stepNum: 8, indents: 2, codeStr: "current := the node in openSet having the lowest fScore[] value" },
+    { stepNum: 9, indents: 2, codeStr: "if current = goal" },
+    { stepNum: 10, indents: 3, codeStr: "return reconstruct_path(cameFrom, current)" },
+    { stepNum: 11, indents: 2, codeStr: "openSet.Remove(current)" },
+    { stepNum: 12, indents: 2, codeStr: "for each neighbor of current" },
+    { stepNum: 13, indents: 3, codeStr: "tentative_gScore := gScore[current] + d(current, neighbor)" },
+    { stepNum: 14, indents: 3, codeStr: "if tentative_gScore < gScore[neighbor]" },
+    { stepNum: 15, indents: 4, codeStr: "cameFrom[neighbor] := current" },
+    { stepNum: 16, indents: 4, codeStr: "gScore[neighbor] := tentative_gScore" },
+    { stepNum: 17, indents: 4, codeStr: "fScore[neighbor] := tentative_gScore + h(neighbor)" },
+    { stepNum: 18, indents: 4, codeStr: "if neighbor not in openSet" },
+    { stepNum: 19, indents: 4, codeStr: "openSet.add(neighbor)" },
+    { stepNum: 20, indents: 1, codeStr: "return failure" }
+]
